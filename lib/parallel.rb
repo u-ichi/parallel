@@ -54,6 +54,14 @@ module Parallel
   end
 
   class << self
+    def default_options=(options= {})
+      @default_options = options
+    end
+
+    def default_options
+      @default_options || {}
+    end
+
     def in_threads(options={:count => 2})
       count, options = extract_count_from_options(options)
 
@@ -88,6 +96,8 @@ module Parallel
 
     def map(array, options = {}, &block)
       array = array.to_a # turn Range and other Enumerable-s into an Array
+
+      options = default_options.merge(options)
 
       if RUBY_PLATFORM =~ /java/ and not options[:in_processes]
         method = :in_threads
